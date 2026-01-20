@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Resume Match Score | ResumeMatchScore.ai</title>
+  <style>
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:#0b1220;
+      color:#eef3ff;
+      min-height:100vh;
+      padding:24px;
+    }
+    .wrap{width:min(1100px, 96vw); margin:0 auto;}
+    .card{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 18px 60px rgba(0,0,0,0.45);
+    }
+    h1{margin:0 0 8px; font-size:26px}
+    p{margin:0; color:#a9b4d0; line-height:1.6}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    label{display:block; font-weight:800; font-size:13px; margin-bottom:8px;}
+    textarea{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(0,0,0,0.25);
+      color:#eef3ff;
+      outline:none;
+      min-height:220px;
+      resize:vertical;
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center;}
+    .btn{
+      border:0;
+      padding:12px 16px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:14px;
+    }
+    .primary{background:#4f7cff; color:white}
+    .ghost{background:rgba(255,255,255,0.06); color:#eef3ff; border:1px solid rgba(255,255,255,0.12)}
+    .danger{background:rgba(239,68,68,0.18); color:#ffd6d6; border:1px solid rgba(239,68,68,0.28)}
+    .note{font-size:12px; color:#a9b4d0; margin-top:10px; line-height:1.5}
+
+    .result{
+      margin-top:14px;
+      display:none;
+    }
+    .resultGrid{display:grid; grid-template-columns: 1fr 1fr; gap:14px;}
+    @media(max-width:900px){.resultGrid{grid-template-columns:1fr}}
+    .box{
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:16px;
+      padding:16px;
+    }
+    .score{
+      font-size:44px; font-weight:1000;
+    }
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+    .chip{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.04);
+      color:#dbe6ff;
+    }
+/* Accordion for suggestions */
+.accordion details{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.accordion summary{
+  cursor: pointer;
+  font-weight: 900;
+  color: #eef3ff;
+  outline: none;
+}
+.accordion summary::-webkit-details-marker{
+  display:none;
+}
+.accordion summary::after{
+  content: "▸";
+  float:right;
+  opacity:0.8;
+}
+.accordion details[open] summary::after{
+  content:"▾";
+}
+.accordion .meta{
+  margin-top: 8px;
+  color:#a9b4d0;
+  font-size:13px;
+  line-height:1.6;
+}
+.accordion ul{
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color:#eef3ff;
+}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Free Resume Match Score</h1>
+      <p>Step 2: Paste a job description and your resume text to get a basic keyword match score (no AI yet).</p>
+
+      <div class="grid">
+        <div>
+          <label>Paste Resume Text (recommended)</label>
+          <textarea id="resumeText" placeholder="Paste your resume text here..."></textarea>
+          <div class="note">Tip: Copy from Word/PDF and paste here for now.</div>
+        </div>
+
+        <div>
+          <label>Paste Job Description (required)</label>
+          <textarea id="jobText" placeholder="Paste job description here..."></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+  	<button class="btn primary" id="analyzeBtn">Analyze</button>
+  	<button class="btn ghost" id="demoBtn">Load Demo</button>
+  	<button class="btn ghost" id="downloadBtn">Download Report</button>
+  	<button class="btn ghost" id="printBtn">Print / Save PDF</button>
+  	<button class="btn danger" id="clearBtn">Clear</button>
+  	<a class="btn ghost" href="/" style="display:inline-block;text-align:center;">Back to Home</a>
+      </div>
+	<div id="proUpsell" style="
+  	margin-top:10px;
+  	padding:12px 14px;
+  	border-radius:14px;
+  	border:1px solid rgba(255,255,255,0.12);
+  	background:rgba(255,255,255,0.03);
+  	color:#eef3ff;
+  	display:flex;
+  	gap:12px;
+  	align-items:center;
+  	justify-content:space-between;
+  	flex-wrap:wrap;
+	">
+  	<div style="font-size:13px; color:#a9b4d0;">
+    	<b style="color:#eef3ff;">Pro</b>: Unlock downloadable report + AI rewrite bullets tailored to this job description.
+  	</div>
+
+  	<button class="btn ghost" id="unlockProBtn">Unlock Pro</button>
+      </div>
+
+	<div id="proBadge" style="
+  	display:none;
+ 	margin-top:10px;
+  	padding:8px 14px;
+  	border-radius:999px;
+  	background:rgba(34,197,94,0.15);
+ 	 border:1px solid rgba(34,197,94,0.35);
+  	color:#86efac;
+  	font-weight:900;
+  	font-size:13px;
+ 	 width:fit-content;
+	">
+  	✅ Pro Unlocked
+      </div>
+
+      <div class="result" id="result">
+        <div class="resultGrid">
+          <div class="box">
+            <div class="note">Match Score</div>
+            <div class="score" id="scoreValue">0</div>
+            <div class="note" id="scoreLabel">—</div>
+          </div>
+
+          <div class="box">
+            <div class="note">Missing Keywords</div>
+            <div class="chips" id="missingChips"></div>
+          </div>
+
+          <div class="box">
+            <div class="note">Keywords Found</div>
+            <div class="chips" id="foundChips"></div>
+          </div>
+
+          <div class="box">
+            <div class="note">Next Suggestions</div>
+            <div class="note" id="nextTips"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        Disclaimer: This is an estimate based on keyword matching (not any specific employer ATS).
+      </div>
+    </div>
+  </div>
+<script>
+// --- PRO GATING (no backend) ---
+const PRO_CODE = "RMS-PRO-2026"; // change anytime
+const PRO_KEY = "rms_pro_unlocked";
+const EMAIL_KEY = "rms_email";
+
+function getSavedEmail() {
+  return localStorage.getItem(EMAIL_KEY) || "";
+}
+
+function saveEmail(email) {
+  localStorage.setItem(EMAIL_KEY, email);
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function promptEmailIfNeeded() {
+  let email = getSavedEmail();
+  if (email) return email;
+
+  email = prompt("Enter your email to unlock Pro features:");
+  if (!email) return null;
+
+  email = email.trim().toLowerCase();
+  if (!isValidEmail(email)) {
+    alert("Please enter a valid email.");
+    return null;
+  }
+
+saveEmail(email);
+setPro(true); // auto-unlock Pro
+alert("🎁 Thanks! You’ve unlocked Pro access for this session.");
+applyProUI(); // update button labels/state
+return email;
+}
+
+function isPro() {
+  return localStorage.getItem(PRO_KEY) === "1";
+}
+function setPro(on) {
+  localStorage.setItem(PRO_KEY, on ? "1" : "0");
+}
+function promptPro() {
+  // Step 1: collect email first
+  const email = promptEmailIfNeeded();
+  if (!email) return false;
+
+  // Step 2: then ask pro code
+  const code = prompt("Enter Pro access code:");
+  if (!code) return false;
+
+  if (code.trim() === PRO_CODE) {
+    setPro(true);
+    alert("Pro unlocked ✅");
+    return true;
+  }
+
+  alert("Invalid code ❌");
+  return false;
+}
+
+/* =========================================================
+   ResumeMatchScore – Advanced Step 2 Script + Advanced Report
+   - Clean UI chips (removes &, punctuation)
+   - Better keyword cleaning
+   - Advanced report: summary + grouped keywords + printable PDF layout
+========================================================= */
+
+/* -------------------------
+   1) Normalization & Cleaning
+-------------------------- */
+function normalizeText(text) {
+  return (text || "")
+    .toLowerCase()
+    .replaceAll("&", " and ")
+    .replace(/[^a-z0-9\s\+\-\#]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function cleanChipText(s) {
+  return (s || "")
+    .toLowerCase()
+    .replaceAll("&", " ")         // remove '&' explicitly (AI & ML -> ai  ml)
+    .replaceAll(".", " ")
+    .replaceAll("/", " ")
+    .replaceAll("(", " ")
+    .replaceAll(")", " ")
+    .replaceAll(",", " ")
+    .replaceAll(":", " ")
+    .replaceAll(";", " ")
+    .replace(/[^a-z0-9\s\+\-\#]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeKeywordPhrase(k) {
+  const s = cleanChipText(k);
+
+  const replacements = [
+    ["pipelines own", "pipeline ownership"],
+    ["own compliance", "compliance ownership"],
+    ["layers cloud", "cloud security layers"],
+    ["azure gcp", "multi-cloud (azure, gcp)"],
+    ["infrastructure aws", "aws infrastructure"]
+  ];
+
+  let out = s;
+  for (const [a,b] of replacements) out = out.replaceAll(a, b);
+  return out.trim();
+}
+
+function escapeHtml(s){
+  return (s || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* -------------------------
+   2) Stopwords / Tokenize
+-------------------------- */
+const STOPWORDS = new Set([
+  "the","and","or","to","of","in","for","with","a","an","on","at","by","from","as","is","are","was","were",
+  "be","been","being","this","that","it","its","your","you","we","our","their","they","will","can","may","should","must","not",
+  "into","over","under","within","across","via","use","used","using","experience","skills","role","job","work","team","project",
+  "how","ensure","comfortable","contribute","build","maintain","support","help","able","ability"
+]);
+
+function tokenize(text) {
+  const t = normalizeText(text);
+  return t.split(" ")
+    .filter(w => w.length >= 3)
+    .filter(w => !STOPWORDS.has(w));
+}
+
+/* -------------------------
+   3) Alias Map (concept matches)
+-------------------------- */
+const ALIASES = [
+  { key: "cloud infrastructure", any: ["cloud-native", "aws", "azure", "gcp", "terraform", "iac"] },
+  { key: "pipelines", any: ["ci/cd", "cicd", "pipeline", "jenkins", "gitlab", "github actions", "azure devops"] },
+  { key: "security layers", any: ["defense in depth", "layered security", "zero trust"] },
+  { key: "design security", any: ["security-by-design", "secure by design", "security architecture", "threat modeling"] },
+  { key: "compliance", any: ["iso 27001", "soc 2", "audit", "governance", "risk management"] },
+];
+
+/* -------------------------
+   4) Extract Keywords (better phrases)
+-------------------------- */
+function extractKeywords(jdText) {
+  const words = tokenize(jdText);
+
+  // Single-word frequency
+  const freq = new Map();
+  for (const w of words) freq.set(w, (freq.get(w) || 0) + 1);
+
+  const topWords = Array.from(freq.entries())
+    .sort((a,b) => b[1]-a[1])
+    .slice(0, 24)
+    .map(x => x[0]);
+
+  // Two-word phrases
+  const pfreq = new Map();
+  for (let i=0; i<words.length-1; i++) {
+    const phrase = cleanChipText(words[i] + " " + words[i+1]);
+    if (phrase.length < 3) continue;
+    pfreq.set(phrase, (pfreq.get(phrase) || 0) + 1);
+  }
+
+  const topPhrases = Array.from(pfreq.entries())
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0, 14)
+    .map(x=>x[0]);
+
+  return [...new Set([...topPhrases, ...topWords].map(cleanChipText).filter(Boolean))].slice(0, 36);
+}
+
+/* -------------------------
+   5) Weight keywords (realistic scoring)
+-------------------------- */
+function keywordWeight(k) {
+  const s = (k || "").toLowerCase();
+
+  // High-value certs / compliance
+  if (s.includes("iso 27001") || s.includes("soc 2") || s.includes("cissp") || s.includes("cisa") || s.includes("cism")) return 4;
+
+  // Cloud/security/identity
+  if (s.includes("kubernetes") || s.includes("terraform") || s.includes("iac") ||
+      s.includes("cloud") || s.includes("security") ||
+      s.includes("identity") || s.includes("okta") || s.includes("saml")) return 3;
+
+  // CI/CD / DevSecOps
+  if (s.includes("ci/cd") || s.includes("pipeline") || s.includes("devsecops") || s.includes("automation")) return 3;
+
+  // Medium value
+  if (s.includes("audit") || s.includes("governance") || s.includes("risk") || s.includes("privacy") || s.includes("data")) return 2;
+
+  return 1;
+}
+
+/* -------------------------
+   6) Match logic (direct + alias) + weights
+-------------------------- */
+function countMatches(resumeText, keywords) {
+  const r = normalizeText(resumeText);
+
+  const matched = [];
+  const missing = [];
+
+  let totalWeight = 0;
+  let matchedWeight = 0;
+
+  for (const k of keywords) {
+    const w = keywordWeight(k);
+    totalWeight += w;
+
+    const kNorm = normalizeText(k);
+
+    let isMatch = r.includes(kNorm);
+
+    if (!isMatch) {
+      const rule = ALIASES.find(a => a.key === cleanChipText(k));
+      if (rule) {
+        isMatch = rule.any.some(term => r.includes(normalizeText(term)));
+      }
+    }
+
+    if (isMatch) {
+      matched.push(normalizeKeywordPhrase(k));
+      matchedWeight += w;
+    } else {
+      missing.push(normalizeKeywordPhrase(k));
+    }
+  }
+
+  // Clean & de-dup lists
+  const uniq = (arr) => Array.from(new Set(arr.filter(x => x && x.length >= 3)));
+
+  return {
+    matched: uniq(matched),
+    missing: uniq(missing),
+    matchedWeight,
+    totalWeight
+  };
+}
+
+function computeScore(matchedWeight, totalWeight) {
+  if (totalWeight <= 0) return 0;
+  const ratio = matchedWeight / totalWeight;
+  let score = Math.round(100 * Math.pow(ratio, 0.62));
+  return Math.max(0, Math.min(100, score));
+}
+
+function label(score) {
+  if (score >= 85) return "Excellent match";
+  if (score >= 70) return "Strong match";
+  if (score >= 55) return "Moderate match";
+  if (score >= 40) return "Weak match";
+  return "Very weak match";
+}
+
+/* -------------------------
+   7) UI Chips renderer (cleaned)
+-------------------------- */
+function renderChips(container, arr, max = 18) {
+  container.innerHTML = "";
+  const cleaned = Array.from(new Set(arr.map(x => String(x).trim()).filter(x => x.length >= 3)));
+  const slice = cleaned.slice(0, max);
+
+  for (const item of slice) {
+    const d = document.createElement("div");
+    d.className = "chip";
+    d.textContent = item;
+    container.appendChild(d);
+  }
+
+  if (cleaned.length > max) {
+    const d = document.createElement("div");
+    d.className = "chip";
+    d.textContent = `+${cleaned.length - max} more`;
+    container.appendChild(d);
+  }
+}
+
+/* -------------------------
+   8) Advanced Keyword Grouping (for report)
+-------------------------- */
+function categorizeKeyword(k) {
+  const s = k.toLowerCase();
+
+  if (/(aws|azure|gcp|cloud|terraform|iac|kubernetes)/.test(s)) return "Cloud";
+  if (/(iso|soc|audit|compliance|governance|risk|nist)/.test(s)) return "Compliance";
+  if (/(ci\/cd|cicd|pipeline|devsecops|automation|jenkins|gitlab|actions|azure devops)/.test(s)) return "DevSecOps";
+  if (/(identity|okta|saml|zero trust|defense|threat|security|incident|response|privacy|data)/.test(s)) return "Security";
+  return "Other";
+}
+
+function groupKeywords(list) {
+  const groups = { Cloud: [], Compliance: [], DevSecOps: [], Security: [], Other: [] };
+  for (const k of list) groups[categorizeKeyword(k)].push(k);
+  // sort for nicer output
+  Object.keys(groups).forEach(g => groups[g].sort());
+  return groups;
+}
+
+/* -------------------------
+   9) Advanced Report Builder
+-------------------------- */
+let LAST_REPORT = null;
+
+function buildReportHTML(report){
+  const dt = new Date().toLocaleString();
+
+  const foundGroups = groupKeywords(report.matched || []);
+  const missingGroups = groupKeywords(report.missing || []);
+
+  const listBlock = (title, groups) => {
+    const section = Object.entries(groups).map(([g, items]) => {
+      const li = items.length
+        ? items.slice(0, 40).map(x => `<li>${escapeHtml(x)}</li>`).join("")
+        : "<li>No keywords detected in this category.</li>";
+      return `
+        <div class="group">
+          <h3>${escapeHtml(g)} (${items.length})</h3>
+          <ul>${li}</ul>
+        </div>`;
+    }).join("");
+
+    return `
+      <div class="box">
+        <h2>${escapeHtml(title)}</h2>
+        <div class="groups">${section}</div>
+      </div>`;
+  };
+
+  const summary = `
+    <div class="box">
+      <div class="muted">Match Score</div>
+      <div class="score">${escapeHtml(String(report.score))}</div>
+      <div class="pill">${escapeHtml(report.label)}</div>
+      <div class="muted small" style="margin-top:10px;">
+        Keywords found: <b>${report.matched?.length || 0}</b> • Missing: <b>${report.missing?.length || 0}</b>
+      </div>
+    </div>`;
+
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ResumeMatchScore Report</title>
+<style>
+  body{font-family:Arial, sans-serif; margin:24px; color:#111;}
+  .top{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brand{font-weight:800; font-size:18px;}
+  .muted{color:#555; font-size:12px;}
+  .small{font-size:12px;}
+  .score{font-size:46px; font-weight:900; margin:8px 0;}
+  .pill{display:inline-block; padding:6px 10px; border:1px solid #ddd; border-radius:999px; font-size:12px; margin-top:6px;}
+  .grid{display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px;}
+  .box{border:1px solid #e5e5e5; border-radius:12px; padding:14px;}
+  h2{margin:0 0 10px; font-size:16px}
+  h3{margin:0 0 8px; font-size:14px}
+  ul{margin:0; padding-left:18px}
+  .groups{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .group{border:1px solid #eee; border-radius:10px; padding:12px;}
+  .note{margin-top:14px; font-size:12px; color:#555; line-height:1.5}
+  @media (max-width: 900px){ .groups{grid-template-columns:1fr;} }
+  @media print { .no-print{display:none;} body{margin:0.5in;} }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div>
+      <div class="brand">ResumeMatchScore.ai — Advanced Report</div>
+      <div class="muted">Generated: ${escapeHtml(dt)}</div>
+      <div class="muted">Domain: https://resumematchscore.ai</div>
+    </div>
+    <div class="no-print">
+      <button onclick="window.print()">Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    ${summary}
+    ${listBlock("Keywords Found (grouped)", foundGroups)}
+    ${listBlock("Missing Keywords (grouped)", missingGroups)}
+
+    <div class="box">
+      <h2>Next Suggestions</h2>
+      <div>${escapeHtml(report.tips || "")}</div>
+      <div class="note">
+        Disclaimer: This score is an estimate based on keyword matching and best practices (not any specific employer ATS).
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+/* -------------------------
+   10) UI Wiring (IDs)
+-------------------------- */
+const resumeTextEl = document.getElementById("resumeText");
+const jobTextEl = document.getElementById("jobText");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const printBtn = document.getElementById("printBtn");
+const demoBtn = document.getElementById("demoBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const resultEl = document.getElementById("result");
+const scoreValueEl = document.getElementById("scoreValue");
+const scoreLabelEl = document.getElementById("scoreLabel");
+const foundChipsEl = document.getElementById("foundChips");
+const missingChipsEl = document.getElementById("missingChips");
+const nextTipsEl = document.getElementById("nextTips");
+const unlockProBtn = document.getElementById("unlockProBtn");
+const proUpsell = document.getElementById("proUpsell");
+
+if (unlockProBtn) {
+  unlockProBtn.addEventListener("click", () => {
+    // triggers your existing flow (email -> gift -> pro)
+    promptEmailIfNeeded();
+  });
+}
+function applyProUI() {
+  const pro = isPro();
+
+  // Keep buttons clickable (so user can be prompted for Pro)
+  if (downloadBtn) downloadBtn.disabled = false;
+  if (printBtn) printBtn.disabled = false;
+
+  if (downloadBtn) downloadBtn.textContent = pro ? "Download Report" : "Download Report (Pro)";
+  if (printBtn) printBtn.textContent = pro ? "Print / Save PDF" : "Print / Save PDF (Pro)";
+
+  // Pro badge
+  const badge = document.getElementById("proBadge");
+  if (badge) badge.style.display = pro ? "block" : "none";
+  if (proUpsell) proUpsell.style.display = pro ? "none" : "flex";
+}
+
+applyProUI();
+
+
+demoBtn.addEventListener("click", () => {
+  resumeTextEl.value =
+    "Senior Security Engineer with experience securing cloud-native environments (AWS/Azure), DevSecOps and CI/CD pipeline security. ISO 27001 & SOC 2 ownership. Incident response and security architecture. Implementing security-by-design across cloud, data, and application layers.";
+  jobTextEl.value =
+    "Looking for a security engineer comfortable with container security (Kubernetes), cloud infrastructure (Terraform/IaC), identity management (Okta/SAML). Comfortable securing LLM-based apps and understanding prompt injection/data leakage. Strong privacy mindset and compliance awareness.";
+});
+
+clearBtn.addEventListener("click", () => {
+  resumeTextEl.value = "";
+  jobTextEl.value = "";
+  resultEl.style.display = "none";
+  LAST_REPORT = null;
+});
+
+function buildRewriteSuggestions(missingGroups) {
+  const suggestions = [];
+
+  if ((missingGroups.Cloud || []).length) {
+    suggestions.push({
+      title: "Cloud",
+      what: "Add explicit multi-cloud / cloud-infra ownership language aligned to the JD.",
+      where: "Summary + Skills + 1–2 bullets in Experience",
+      bullets: [
+        "Designed and secured cloud infrastructure across AWS/Azure (and {GCP exposure if applicable}), including IAM hardening, logging, and baseline controls.",
+        "Implemented Infrastructure-as-Code security (Terraform/IaC) with policy checks and secure defaults to reduce misconfigurations.",
+        "Hardened Kubernetes/container security controls (image scanning, admission policies, runtime monitoring) for production workloads."
+      ]
+    });
+  }
+
+  if ((missingGroups.Compliance || []).length) {
+    suggestions.push({
+      title: "Compliance",
+      what: "Make ownership clear: end-to-end ISO/SOC controls, evidence, audits, and continuous compliance.",
+      where: "Summary + Experience",
+      bullets: [
+        "Owned ISO 27001 control implementation and audit readiness, including evidence collection, remediation tracking, and control testing.",
+        "Led SOC 2 alignment activities with stakeholders and auditors, improving pass rate and reducing audit findings.",
+        "Built repeatable compliance SOPs/playbooks to ensure controls are operational and measurable."
+      ]
+    });
+  }
+
+  if ((missingGroups.DevSecOps || []).length) {
+    suggestions.push({
+      title: "DevSecOps",
+      what: "Translate 'pipelines' into CI/CD security gates and measurable outcomes.",
+      where: "Skills + Experience",
+      bullets: [
+        "Secured CI/CD pipelines by introducing SAST/SCA/secret scanning and enforcing quality gates before deployment.",
+        "Integrated IaC scanning and container image signing into build pipelines to reduce supply-chain risk.",
+        "Automated security checks in GitHub Actions/GitLab/Jenkins to shorten remediation time."
+      ]
+    });
+  }
+
+  if ((missingGroups.Security || []).length) {
+    suggestions.push({
+      title: "Security Architecture",
+      what: "Add 'defense-in-depth / security-by-design' language with concrete controls.",
+      where: "Summary + Experience",
+      bullets: [
+        "Applied defense-in-depth architecture across cloud and applications, aligning controls to threat models and business risk.",
+        "Implemented security-by-design practices (threat modeling, secure patterns, review gates) to prevent recurring issues.",
+        "Led incident response and post-incident reviews to improve detection, containment, and recovery SLAs."
+      ]
+    });
+  }
+
+  if (!suggestions.length) {
+    return [{
+      title: "Overall",
+      what: "Your resume already matches well. Improve clarity and add measurable outcomes.",
+      where: "Experience bullets",
+      bullets: [
+        "Add metrics: % risk reduced, time saved, incidents handled, audit findings reduced.",
+        "Use stronger verbs: led, designed, implemented, automated, improved.",
+        "Align job title and top skills to the exact role wording."
+      ]
+    }];
+  }
+
+  return suggestions;
+}
+
+function renderRewriteSuggestions(containerEl, items) {
+  if (!containerEl) return;
+
+  containerEl.innerHTML = `
+    <div class="accordion">
+      ${items.map((s, idx) => `
+        <details ${idx === 0 ? "open" : ""}>
+          <summary>${escapeHtml(s.title)}</summary>
+
+          <div class="meta">
+            <b>What:</b> ${escapeHtml(s.what)}<br/>
+            <b>Where:</b> ${escapeHtml(s.where)}
+          </div>
+
+          <ul>
+            ${s.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join("")}
+          </ul>
+        </details>
+      `).join("")}
+    </div>
+  `;
+}
+
+
+analyzeBtn.addEventListener("click", () => {
+  const resume = resumeTextEl.value || "";
+  const jd = jobTextEl.value || "";
+
+  if (!jd.trim()) {
+    alert("Please paste a job description.");
+    return;
+  }
+  if (!resume.trim()) {
+    alert("Please paste your resume text (or click Load Demo).");
+    return;
+  }
+
+  const keys = extractKeywords(jd);
+  const { matched, missing, matchedWeight, totalWeight } = countMatches(resume, keys);
+
+  const score = computeScore(matchedWeight, totalWeight);
+  const scoreLabel = label(score);
+
+  scoreValueEl.textContent = String(score);
+  scoreLabelEl.textContent = scoreLabel;
+
+  renderChips(foundChipsEl, matched, 18);
+  renderChips(missingChipsEl, missing, 18);
+
+// Build groups and show rewrite suggestions on the page
+  const missingGroups = groupKeywords(missing);
+  const rewriteItems = buildRewriteSuggestions(missingGroups);
+  renderRewriteSuggestions(nextTipsEl, rewriteItems);
+
+  
+  // ✅ Indented for readability (your request)
+const tips = "Improve by adding missing keywords naturally in Skills/Experience and writing measurable achievements (numbers, outcomes, impact).";
+  LAST_REPORT = {
+    score,
+    label: scoreLabel,
+    matched,
+    missing,
+    tips
+  };
+
+  resultEl.style.display = "block";
+  resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+downloadBtn.addEventListener("click", () => {
+  if (!isPro()) {
+    if (!promptPro()) return;
+    applyProUI();
+  }
+
+  if (!LAST_REPORT) {
+    alert("Please click Analyze first to generate a report.");
+    return;
+  }
+
+  const html = buildReportHTML(LAST_REPORT);
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "resumematchscore-report.html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+});
+
+
+printBtn.addEventListener("click", () => {
+  if (!isPro()) {
+    if (!promptPro()) return;
+    applyProUI();
+  }
+
+  if (!LAST_REPORT) {
+    alert("Please click Analyze first to generate a report.");
+    return;
+  }
+
+  const html = buildReportHTML(LAST_REPORT);
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+});
+
+</script>
+</body>
+</html>

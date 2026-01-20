@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ResumeMatchScore.ai | Resume & Job Match Score (ATS-Aligned)</title>
+  <meta name="description" content="Upload your resume, compare it to any job description, and get a Resume Match Score with clear improvement tips. ATS-aligned and recruiter-friendly." />
+  <link rel="canonical" href="https://resumematchscore.ai/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ResumeMatchScore.ai | Resume & Job Match Score" />
+  <meta property="og:description" content="Upload your resume, compare it to any job description, and get a Resume Match Score with improvement insights." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://resumematchscore.ai/" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E📄%3C/text%3E%3C/svg%3E">
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:rgba(255,255,255,0.05);
+      --border:rgba(255,255,255,0.12);
+      --text:#eef3ff;
+      --muted:#a9b4d0;
+      --blue:#4f7cff;
+      --green:#22c55e;
+      --radius:18px;
+      --shadow:0 18px 60px rgba(0,0,0,0.45);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 600px at 20% 10%, rgba(79,124,255,.25), transparent 60%),
+        radial-gradient(900px 500px at 85% 20%, rgba(34,197,94,.18), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .wrap{width:min(1080px,92vw); margin:0 auto; padding:44px 0 70px;}
+    .top{display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:28px;}
+    .brand{display:flex; align-items:center; gap:12px; font-weight:800;}
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      background:linear-gradient(135deg,var(--blue),var(--green));
+      display:grid; place-items:center; box-shadow:0 16px 40px rgba(79,124,255,.25);
+      font-size:20px;
+    }
+    .pill{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,0.04);
+      padding:8px 12px; border-radius:999px;
+      color:var(--muted); font-size:12px;
+    }
+    .hero{display:grid; grid-template-columns:1.2fr .8fr; gap:16px;}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:26px;
+    }
+    h1{margin:0 0 10px; font-size:clamp(28px,3.3vw,44px); line-height:1.15;}
+    p{margin:0; color:var(--muted); line-height:1.6;}
+    .badges{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 10px;}
+    .badge{font-size:12px; padding:8px 12px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,0.04); color:var(--muted);}
+    .cta{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;}
+    .btn{
+      padding:12px 16px; border-radius:12px;
+      border:0; cursor:pointer; font-weight:800; font-size:14px;
+      transition:transform .08s ease;
+    }
+    .btn:active{transform:translateY(1px)}
+    .primary{background:var(--blue); color:white; box-shadow:0 16px 40px rgba(79,124,255,.25);}
+    .ghost{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
+    .miniGrid{display:grid; gap:12px;}
+    .mini{border:1px solid var(--border); background:rgba(255,255,255,0.03); border-radius:16px; padding:16px;}
+    .mini b{display:block; margin-bottom:6px; font-size:13px;}
+    .mini span{color:var(--muted); font-size:13px; line-height:1.5;}
+    .section{margin-top:18px;}
+    .label{font-size:12px; letter-spacing:.6px; text-transform:uppercase; color:var(--muted); margin:0 0 10px;}
+    .how{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+    @media(max-width:900px){.how{grid-template-columns:1fr}}
+    .step{border:1px solid var(--border); background:rgba(255,255,255,0.03); border-radius:16px; padding:16px;}
+    .num{
+      width:28px; height:28px; border-radius:10px;
+      display:grid; place-items:center;
+      background:rgba(79,124,255,.18);
+      border:1px solid rgba(79,124,255,.35);
+      color:#d6e3ff; font-weight:900; margin-bottom:8px; font-size:13px;
+    }
+    form{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+    input{
+      flex:1 1 220px; padding:12px 12px; border-radius:12px;
+      border:1px solid var(--border); background:rgba(0,0,0,0.25);
+      color:var(--text);
+    }
+    .small{font-size:12px; color:var(--muted); margin-top:10px; line-height:1.5;}
+    .footer{margin-top:18px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; color:var(--muted); font-size:12px;}
+    .link{color:#d6e3ff; opacity:.9}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">📄</div>
+        <div>ResumeMatchScore.ai</div>
+      </div>
+      <div class="pill">Live on Cloudflare Pages • HTTPS enforced</div>
+    </div>
+
+    <div class="hero">
+      <div class="card">
+        <h1>Resume & Job Match Score<br/>ATS-Aligned. Recruiter-Friendly.</h1>
+        <p>
+          Compare your resume against any job description and get a clear score + improvement tips.
+          Built for all roles and industries.
+        </p>
+
+        <div class="badges">
+          <div class="badge">✅ ATS format checks</div>
+          <div class="badge">✅ Keyword match</div>
+          <div class="badge">✅ Readability & structure</div>
+          <div class="badge">✅ Region guidance</div>
+        </div>
+
+        <div class="cta">
+          <a class="btn primary" href="/score.html" style="display:inline-block; text-align:center;">
+            Get Free Score (Next)
+	  </a>
+          </button>
+          <button class="btn ghost" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">
+            Join Waitlist
+          </button>
+        </div>
+
+        <div class="small">
+          Note: Score will be an ATS-aligned estimate based on best practices (not any specific employer ATS).
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="label">What you get</p>
+        <div class="miniGrid">
+          <div class="mini">
+            <b>Overall Score (0–100)</b>
+            <span>Fast signal on how well your resume matches the target job.</span>
+          </div>
+          <div class="mini">
+            <b>Top Fixes</b>
+            <span>Ranked list of changes that improve shortlist probability.</span>
+          </div>
+          <div class="mini">
+            <b>Clean & Secure</b>
+            <span>HTTPS always, Cloudflare security, and simple deployment.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <p class="label">How it works</p>
+      <div class="how">
+        <div class="step">
+          <div class="num">1</div>
+          <b>Upload resume</b>
+          <span>PDF/DOCX supported (we’ll add upload next).</span>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <b>Paste job description</b>
+          <span>We compare keywords, skills, and role expectations.</span>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <b>Get score + fixes</b>
+          <span>Actionable suggestions and optional paid rewrite later.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section card" id="waitlist">
+      <p class="label">Waitlist</p>
+      <p>Want early access to the scoring tool? Drop your email below.</p>
+
+      <!-- Simple mailto for now (no backend needed) -->
+      <form action="mailto:your-email@example.com" method="post" enctype="text/plain">
+        <input type="email" name="email" placeholder="you@example.com" required />
+        <button class="btn primary" type="submit">Notify me</button>
+      </form>
+
+      <div class="small">
+        Replace <span class="link">your-email@example.com</span> with your email.
+        Later we can switch to a proper form + database.
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>© <span id="y"></span> ResumeMatchScore.ai</div>
+      <div>
+        <a class="link" href="https://resumematchscore.ai" target="_blank" rel="noreferrer">Home</a>
+        &nbsp;•&nbsp;
+        <a class="link" href="#" onclick="alert('Next: add Privacy page')">Privacy</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
