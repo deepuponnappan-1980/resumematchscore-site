@@ -136,6 +136,7 @@
   	<button class="btn primary" id="analyzeBtn">Analyze</button>
   	<button class="btn ghost" id="demoBtn">Load Demo</button>
   	<button class="btn ghost" id="downloadBtn">Download Report</button>
+    <button class="btn ghost" id="aiRewriteBtn">AI Rewrite (Pro)</button>
   	<button class="btn ghost" id="printBtn">Print / Save PDF</button>
   	<button class="btn danger" id="clearBtn">Clear</button>
   	<a class="btn ghost" href="/" style="display:inline-block;text-align:center;">Back to Home</a>
@@ -617,6 +618,7 @@ const jobTextEl = document.getElementById("jobText");
 const analyzeBtn = document.getElementById("analyzeBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const printBtn = document.getElementById("printBtn");
+const aiRewriteBtn = document.getElementById("aiRewriteBtn");
 const demoBtn = document.getElementById("demoBtn");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -851,7 +853,73 @@ printBtn.addEventListener("click", () => {
   w.document.write(html);
   w.document.close();
 });
+if (aiRewriteBtn) {
+  aiRewriteBtn.addEventListener("click", async () => {
+    // Pro gate (uses your existing functions)
+    if (!isPro()) {
+      if (!promptPro()) return;
+      applyProUI();
+    }
 
+    const resumeText = (document.getElementById("resumeText")?.value || "").trim();
+    const jobText = (document.getElementById("jobText")?.value || "").trim();
+
+    if (!resumeText || !jobText) {
+      alert("Paste Resume + Job Description first.");
+      return;
+    }
+
+    // Take top missing keywords from the chips on the page
+    const missing = Array.from(document.querySelectorAll("#missingChips .chip"))
+      .map(el => el.textContent.trim())
+      .filter(x => x && !x.startsWith("+"))
+      .slice(0, 8);
+
+    aiRewriteBtn.textContent = "Generating…";
+    aiRewriteBtn.disabled = true;
+
+    try {
+      const res = await fetch("/ai-rewrite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resumeText,
+          jobText,
+          missingKeywords: missing,
+          category: "General"
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data?.message || "AI failed. Try again.");
+        return;
+      }
+
+      // Show AI bullets under Next Suggestions box
+      const box = document.getElementById("nextTips");
+      if (box) {
+        const bulletsHtml = (data.bullets || [])
+          .map(b => `<li>${escapeHtml(b)}</li>`)
+          .join("");
+
+        box.innerHTML = `
+          <div class="note"><b>AI Rewrite Bullets</b></div>
+          <ul style="margin:8px 0 0; padding-left:18px;">${bulletsHtml}</ul>
+        `;
+      }
+
+    } catch (e) {
+      alert("AI request failed. Please try again.");
+      console.error(e);
+    } finally {
+      aiRewriteBtn.textContent = "AI Rewrite (Pro)";
+      aiRewriteBtn.disabled = false;
+    }
+  });
+}
 </script>
 </body>
 </html>
+
